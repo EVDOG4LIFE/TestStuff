@@ -1,1 +1,26 @@
 
+# Get server names from user
+$serverNames = Read-Host -Prompt "Enter server names, separated by commas"
+
+# Get the file path to the MSI installer
+$filePath = Read-Host -Prompt "Enter the filepath to the MSI"
+
+# Convert the server names string to an array
+$serverNames = $serverNames -split ','
+
+foreach($serverName in $serverNames) {
+    # Trim any leading or trailing spaces
+    $serverName = $serverName.Trim()
+
+    # Display a message indicating the server where the installation is starting
+    Write-Host "Starting installation on $serverName"
+
+    # Run the installation on the remote server
+    Invoke-Command -ComputerName $serverName -ScriptBlock {
+        param($filePath)
+        Start-Process -FilePath "msiexec.exe" -ArgumentList "/i `"$filePath`" /quiet" -Wait
+    } -ArgumentList $filePath
+
+    # Display a message indicating the server where the installation has completed
+    Write-Host "Installation completed on $serverName"
+}
