@@ -1,0 +1,19 @@
+$filePath = "C:\temp\features.xml"
+
+if (Test-Path $filePath) {
+    $features = Import-Clixml -Path $filePath
+    $features | ForEach-Object {
+        $feature = Get-WindowsFeature -Name $_.Name
+        if ($null -eq $feature) {
+            Write-Host "Feature $($_.Name) is not available on this server."
+        } elseif (-not $feature.Installed) {
+            try {
+                Install-WindowsFeature -Name $_.Name
+            } catch {
+                Write-Host "Failed to install feature $($_.Name). Error: $($_.Exception.Message)"
+            }
+        }
+    }
+} else {
+    Write-Host "File $filePath does not exist."
+}
