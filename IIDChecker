@@ -1,0 +1,8 @@
+$IID = "IID_To_Search_For"
+$regPath = "HKLM:\SOFTWARE\Classes\Interface"
+Get-ChildItem -Path $regPath -Recurse | ForEach-Object {
+    $iidValue = Get-ItemPropertyValue -Path $_.PSPath -Name "(Default)" -ErrorAction SilentlyContinue
+    if($iidValue -eq $IID) {
+        Write-Host $_.PSChildName
+    }
+}
